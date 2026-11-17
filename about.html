@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Our Story — True Shine Silver</title>
+  <meta name="description" content="The story behind True Shine Silver — premium 925 sterling silver jewellery designed to shine and made to last.">
+  <meta name="theme-color" content="#070708">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="about">
+<main>
+  <section class="page-hero" style="padding:90px 0 70px">
+    <div class="wrap center">
+      <div id="bigLogo" class="hero-fade" style="display:flex;justify-content:center;margin-bottom:26px"></div>
+      <span class="eyebrow hero-fade d1">Our story</span>
+      <h1 class="h-display hero-fade d1" style="margin-top:16px">Designed to <em class="chrome-text">shine.</em><br>Made to last.</h1>
+      <p class="lead hero-fade d2" style="margin:24px auto 0">True Shine Silver was born from a simple belief: real luxury should be honest, wearable and built to last a lifetime.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap split">
+      <div class="split-media reveal-img"><img id="img1" alt="Woman wearing silver jewellery" loading="lazy"></div>
+      <div class="reveal">
+        <span class="eyebrow">How it started</span>
+        <h2 class="h-section">Timeless elegance, <em>lasting shine</em></h2>
+        <p class="lead" style="margin-top:20px">We started True Shine with a small collection of rings shared on Instagram — pieces we wished we could find ourselves: genuine sterling silver, hand-set stones and a finish that stays bright for years, not weeks.</p>
+        <p class="lead">Today, every piece is still chosen with the same care. We work only with 925 sterling silver, inspect each item by hand, and pack it in our signature black gift box — ready to give, or to keep.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head reveal center" style="justify-content:center"><div><span class="eyebrow">What we stand for</span><h2 class="h-section">The True Shine <em>promise</em></h2></div></div>
+      <div class="values stagger" id="values"></div>
+    </div>
+  </section>
+
+  <div class="big-marquee" aria-hidden="true"><div class="track" id="mq"></div></div>
+
+  <section class="section">
+    <div class="wrap split reverse">
+      <div class="split-media reveal-img"><img id="img2" alt="Silver rings close-up" loading="lazy"></div>
+      <div class="reveal">
+        <span class="eyebrow">Silver care</span>
+        <h2 class="h-section">Keep your piece <em>shining</em></h2>
+        <ul class="feature-list">
+          <li><span class="num">01</span><div><b>Last on, first off</b><span>Put jewellery on after perfume and makeup; remove before swimming, showering or the gym.</span></div></li>
+          <li><span class="num">02</span><div><b>Store it separately</b><span>Keep each piece in its pouch to avoid scratches and slow down oxidation.</span></div></li>
+          <li><span class="num">03</span><div><b>Polish gently</b><span>A soft polishing cloth brings back the mirror shine in seconds.</span></div></li>
+        </ul>
+        <a href="shop.html" class="btn">Explore the collection</a>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+window.TS_PAGE = () => {
+  const { I } = TS;
+  document.getElementById("bigLogo").innerHTML = TS_LOGO(120);
+  document.getElementById("img1").src = LOOKBOOK.model;
+  document.getElementById("img2").src = LOOKBOOK.stack;
+  document.getElementById("values").innerHTML = [
+    [I.gem, "Genuine 925 silver", "Every piece is solid sterling silver — never plated brass. Hypoallergenic and nickel-free."],
+    [I.sparkle, "Hand-finished shine", "Stones are hand-set and each piece is polished and rhodium-coated for a lasting, bright finish."],
+    [I.gift, "Ready to gift", "Delivered in our signature black box with a polishing cloth — beautiful from the moment it arrives."],
+  ].map(([i, h, p]) => `<div class="value">${i}<h3>${h}</h3><p>${p}</p></div>`).join("");
+  const w = ["Timeless Elegance", "Lasting Shine", "Premium Silver", "Made to Last"];
+  document.getElementById("mq").innerHTML = [...w, ...w, ...w].map(x => `<span>${x}</span>`).join("");
+};
+</script>
+</body>
+</html>

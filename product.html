@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Product — True Shine Silver</title>
+  <meta name="theme-color" content="#070708">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="product">
+<main>
+  <div class="wrap">
+    <div class="crumbs hero-fade" style="padding-top:28px"><a href="index.html">Home</a><span>/</span><a href="shop.html" id="crumbCat">Shop</a><span>/</span><span id="crumbName"></span></div>
+    <div class="pdp" id="pdp"></div>
+  </div>
+
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="section-head reveal"><div><span class="eyebrow">Complete the look</span><h2 class="h-section">You may also <em>love</em></h2></div><a href="shop.html" class="link-arrow">Shop all</a></div>
+      <div class="product-grid stagger" id="related"></div>
+    </div>
+  </section>
+</main>
+
+<div class="sticky-buy" id="stickyBuy"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+window.TS_PAGE = () => {
+  const { card, money, byId, Cart, Wish, I, esc, catName, stars } = TS;
+  const $ = s => document.querySelector(s);
+  const id = new URLSearchParams(location.search).get("id");
+  const p = byId(id) || PRODUCTS[0];
+  let size = p.sizes.length ? "" : "", qty = 1;
+
+  document.title = `${p.name} — True Shine Silver`;
+  $("#crumbCat").textContent = catName(p.cat); $("#crumbCat").href = "shop.html?cat=" + p.cat;
+  $("#crumbName").textContent = p.name;
+  const off = p.compare ? Math.round((1 - p.price / p.compare) * 100) : 0;
+  const isRing = p.tags.includes("rings");
+  const sizeLabel = isRing ? "Ring size" : p.cat === "necklaces" || p.tags.includes("necklaces") ? "Chain length" : "Size";
+
+  $("#pdp").innerHTML = `
+    <div class="gallery hero-fade">
+      <div class="thumbs" id="thumbs">${p.gallery.map((g, i) => `<button class="${i ? "" : "active"}" data-i="${i}" aria-label="View image ${i + 1}"><img src="${g.replace("w=900", "w=200")}" alt=""></button>`).join("")}</div>
+      <div class="main-img" id="mainImg"><img src="${p.gallery[0].replace("w=900", "w=1300")}" alt="${esc(p.name)}"></div>
+    </div>
+    <div class="pdp-info">
+      <span class="eyebrow hero-fade">${catName(p.cat)} · 925 Sterling Silver</span>
+      <h1 class="hero-fade d1">${esc(p.name)}</h1>
+      <div class="hero-fade d1">${stars(p.rating)} <span style="color:var(--muted);font-size:14px;margin-left:6px">${p.rating} · ${p.reviews} reviews</span></div>
+      <div class="pdp-price hero-fade d2"><span class="price">${money(p.price)}</span>${p.compare ? `<span class="compare">${money(p.compare)}</span><span class="save-tag">Save ${off}%</span>` : ""}</div>
+      <p style="font-size:13px;color:var(--muted);margin:0" class="hero-fade d2">Tax included. Free delivery over ${money(STORE.freeShippingOver)}.</p>
+      <p class="pdp-desc hero-fade d2">${esc(p.desc)}</p>
+      <div class="hero-fade d3">
+        ${p.sizes.length ? `<div class="opt-label"><span>${sizeLabel}: <b id="sizeVal" style="color:var(--text);font-weight:400">Select</b></span>${isRing ? `<a href="contact.html#faq">Size guide</a>` : ""}</div>
+        <div class="sizes" id="sizes">${p.sizes.map(s => `<button data-s="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : ""}
+        <div class="opt-label"><span>Quantity</span></div>
+        <div class="buy-row">
+          <div class="qty"><button id="qMinus" aria-label="Decrease">−</button><input id="qInput" value="1" inputmode="numeric" aria-label="Quantity"><button id="qPlus" aria-label="Increase">+</button></div>
+          <button class="btn" id="addBtn">Add to bag · <span id="btnPrice">${money(p.price)}</span></button>
+          <button class="icon-btn wish ${Wish.has(p.id) ? "on" : ""}" data-wish="${p.id}" style="position:static;width:54px;height:54px;border:1px solid var(--line-2);background:none" aria-label="Wishlist">${I.heart}</button>
+        </div>
+        <div style="display:grid;gap:10px;grid-template-columns:1fr 1fr">
+          <button class="btn btn-ghost" id="buyNow">Buy it now</button>
+          <a class="btn wa-btn" id="waBtn" target="_blank" rel="noopener">${I.wa.replace("<svg", '<svg width="18" height="18"')} Order on WhatsApp</a>
+        </div>
+        <div class="pdp-perks">
+          <div>${I.truck}Delivery in 2–4 days</div>
+          <div>${I.shield}Cash on delivery</div>
+          <div>${I.gift}Luxury gift box</div>
+        </div>
+        <div class="accordion">
+          <div class="acc-item open"><button>Details &amp; materials<i></i></button><div class="acc-panel"><div><div>
+            <ul style="margin:0;padding-left:18px;display:grid;gap:6px"><li>Solid 925 sterling silver, stamped</li><li>Rhodium plated for extra shine &amp; tarnish resistance</li><li>Hand-set AAA cubic zirconia stones</li><li>Nickel-free &amp; hypoallergenic</li></ul>
+          </div></div></div></div>
+          <div class="acc-item"><button>Shipping &amp; exchange<i></i></button><div class="acc-panel"><div><div>Dispatched within 48 hours. Delivery in 2–4 working days across Pakistan. Free delivery on orders over ${money(STORE.freeShippingOver)}, otherwise ${money(STORE.shippingFee)}. Exchange within 7 days if unworn and in original packaging.</div></div></div></div>
+          <div class="acc-item"><button>Silver care<i></i></button><div class="acc-panel"><div><div>Keep away from perfume, water and chemicals. Store in the pouch provided and wipe gently with the polishing cloth to restore its shine.</div></div></div></div>
+        </div>
+      </div>
+    </div>`;
+
+  $("#stickyBuy").innerHTML = `<div><div style="font-family:var(--serif);font-size:17px;line-height:1.1">${esc(p.name)}</div><b>${money(p.price)}</b></div><button class="btn" id="stickyAdd">Add to bag</button>`;
+  document.body.classList.add("has-sticky-buy");
+
+  const waMsg = () => `Hi True Shine Silver! I'd like to order:\n• ${p.name}${size ? " (Size " + size + ")" : ""} × ${qty}\n• Price: ${money(p.price * qty)}\n${location.href}`;
+  const setWa = () => $("#waBtn").href = `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(waMsg())}`;
+  setWa();
+
+  // gallery
+  const main = $("#mainImg"), mainImg = main.querySelector("img");
+  $("#thumbs").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    document.querySelectorAll("#thumbs button").forEach(x => x.classList.toggle("active", x === b));
+    mainImg.style.opacity = 0;
+    setTimeout(() => { mainImg.src = p.gallery[+b.dataset.i].replace("w=900", "w=1300"); mainImg.onload = () => mainImg.style.opacity = 1; }, 200);
+  });
+  if (matchMedia("(hover: hover)").matches) {
+    main.addEventListener("mousemove", e => { const r = main.getBoundingClientRect(); mainImg.style.transformOrigin = `${(e.clientX - r.left) / r.width * 100}% ${(e.clientY - r.top) / r.height * 100}%`; });
+    main.addEventListener("mouseenter", () => main.classList.add("zoom"));
+    main.addEventListener("mouseleave", () => main.classList.remove("zoom"));
+  }
+
+  // sizes
+  const sizesEl = $("#sizes");
+  if (sizesEl) sizesEl.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    size = b.dataset.s; sizesEl.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
+    $("#sizeVal").textContent = size; setWa();
+  });
+
+  // qty
+  const qIn = $("#qInput");
+  const setQ = v => { qty = Math.max(1, Math.min(20, v || 1)); qIn.value = qty; $("#btnPrice").textContent = money(p.price * qty); setWa(); };
+  $("#qMinus").onclick = () => setQ(qty - 1); $("#qPlus").onclick = () => setQ(qty + 1);
+  qIn.onchange = () => setQ(parseInt(qIn.value, 10));
+
+  const needSize = () => {
+    if (p.sizes.length && !size) {
+      sizesEl.animate([{ transform: "translateX(0)" }, { transform: "translateX(-8px)" }, { transform: "translateX(8px)" }, { transform: "translateX(0)" }], { duration: 350 });
+      TS.toast(`<div>Please select a ${sizeLabel.toLowerCase()} first</div>`);
+      sizesEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      return true;
+    }
+  };
+  const add = () => { if (needSize()) return false; Cart.add(p.id, qty, size); return true; };
+  $("#addBtn").onclick = () => { if (add()) setTimeout(TS.openCart, 350); };
+  $("#stickyAdd").onclick = () => { if (add()) setTimeout(TS.openCart, 350); };
+  $("#buyNow").onclick = () => { if (add()) location.href = "checkout.html"; };
+
+  // accordion
+  document.querySelectorAll(".acc-item > button").forEach(b => b.onclick = () => b.parentElement.classList.toggle("open"));
+
+  // sticky bar visibility
+  const io = new IntersectionObserver(([en]) => $("#stickyBuy").classList.toggle("show", !en.isIntersecting && en.boundingClientRect.top < 0));
+  io.observe($("#addBtn"));
+
+  // related
+  const rel = PRODUCTS.filter(x => x.id !== p.id && (x.cat === p.cat || x.tags.some(t => p.tags.includes(t)))).slice(0, 4);
+  $("#related").innerHTML = rel.map(card).join("");
+
+  // Structured data for SEO
+  const ld = document.createElement("script"); ld.type = "application/ld+json";
+  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Product", name: p.name, image: p.gallery, description: p.desc, brand: { "@type": "Brand", name: "True Shine Silver" }, aggregateRating: { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.reviews }, offers: { "@type": "Offer", priceCurrency: "PKR", price: p.price, availability: "https://schema.org/InStock" } });
+  document.head.append(ld);
+};
+</script>
+</body>
+</html>

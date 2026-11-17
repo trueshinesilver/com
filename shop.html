@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Shop — True Shine Silver</title>
+  <meta name="description" content="Shop premium 925 sterling silver rings, necklaces, earrings and bracelets from True Shine Silver.">
+  <meta name="theme-color" content="#070708">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="shop">
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs hero-fade"><a href="index.html">Home</a><span>/</span><span id="crumb">Shop</span></div>
+      <h1 class="hero-fade d1" id="title">The Collection</h1>
+      <p class="lead hero-fade d2" id="subtitle">Premium 925 sterling silver — designed to shine, made to last.</p>
+    </div>
+  </section>
+
+  <div class="wrap shop-layout">
+    <aside class="filters">
+      <div class="filter-group"><h5>Category</h5><div class="chip-list" id="catFilter"></div></div>
+      <div class="filter-group"><h5>Collection</h5><div class="chip-list" id="tagFilter"></div></div>
+      <div class="filter-group"><h5>Max price</h5>
+        <input type="range" class="range" id="priceRange" min="2000" max="13000" step="500" value="13000" aria-label="Maximum price">
+        <div class="row-between" style="font-size:13px;color:var(--muted);margin-top:8px"><span>Rs. 2,000</span><span id="priceVal"></span></div>
+      </div>
+      <div class="filter-group" style="border:0"><button class="btn btn-ghost btn-sm" id="resetBtn">Reset filters</button></div>
+    </aside>
+
+    <div>
+      <div class="cat-pills" id="catPills"></div>
+      <div class="toolbar">
+        <span class="results" id="resultCount"></span>
+        <select class="select" id="sort" aria-label="Sort products">
+          <option value="featured">Featured</option>
+          <option value="new">Newest</option>
+          <option value="low">Price: low to high</option>
+          <option value="high">Price: high to low</option>
+          <option value="rating">Top rated</option>
+        </select>
+      </div>
+      <div class="product-grid stagger" id="grid"></div>
+    </div>
+  </div>
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+window.TS_PAGE = () => {
+  const { card, money, Wish, esc } = TS;
+  const $ = s => document.querySelector(s);
+  const qs = new URLSearchParams(location.search);
+  const state = { cat: qs.get("cat") || "all", tag: qs.get("tag") || "all", q: qs.get("q") || "", wish: qs.get("wishlist") === "1", max: 13000, sort: "featured" };
+
+  const cats = [{ id: "all", name: "All Jewellery" }, ...CATEGORIES];
+  const tags = [["all", "Everything"], ["bestseller", "Bestsellers"], ["new", "New Arrivals"], ["gift", "Gift Ideas"], ["couple", "Couple Sets"]];
+  const countFor = id => id === "all" ? PRODUCTS.length : PRODUCTS.filter(p => p.cat === id || p.tags.includes(id)).length;
+
+  function renderFilters() {
+    $("#catFilter").innerHTML = cats.map(c => `<button data-cat="${c.id}" class="${state.cat === c.id ? "active" : ""}"><span>${c.name}</span><span>${countFor(c.id)}</span></button>`).join("");
+    $("#catPills").innerHTML = cats.map(c => `<button data-cat="${c.id}" class="${state.cat === c.id ? "active" : ""}">${c.name}</button>`).join("");
+    $("#tagFilter").innerHTML = tags.map(([id, n]) => `<button data-tag="${id}" class="${state.tag === id ? "active" : ""}"><span>${n}</span></button>`).join("");
+    $("#priceVal").textContent = money(state.max);
+  }
+
+  function list() {
+    let l = PRODUCTS.slice();
+    if (state.wish) l = l.filter(p => Wish.has(p.id));
+    if (state.cat !== "all") l = l.filter(p => p.cat === state.cat || p.tags.includes(state.cat));
+    if (state.tag !== "all") l = l.filter(p => p.tags.includes(state.tag));
+    if (state.q) { const q = state.q.toLowerCase(); l = l.filter(p => (p.name + " " + p.cat + " " + p.tags.join(" ") + " " + p.desc).toLowerCase().includes(q)); }
+    l = l.filter(p => p.price <= state.max);
+    const s = { low: (a, b) => a.price - b.price, high: (a, b) => b.price - a.price, rating: (a, b) => b.rating - a.rating, new: (a, b) => b.tags.includes("new") - a.tags.includes("new") }[state.sort];
+    return s ? l.sort(s) : l;
+  }
+
+  function render() {
+    renderFilters();
+    const l = list();
+    const catObj = CATEGORIES.find(c => c.id === state.cat);
+    const title = state.wish ? "Your Wishlist" : state.q ? `Results for “${esc(state.q)}”` : catObj ? catObj.name : (tags.find(t => t[0] === state.tag && t[0] !== "all") || [0, "The Collection"])[1];
+    $("#title").innerHTML = title; $("#crumb").innerHTML = title;
+    document.title = (state.wish ? "Wishlist" : catObj ? catObj.name : "Shop") + " — True Shine Silver";
+    $("#resultCount").textContent = `${l.length} piece${l.length === 1 ? "" : "s"}`;
+    const g = $("#grid");
+    g.classList.remove("in");
+    g.innerHTML = l.length ? l.map(card).join("") : `<div class="empty" style="grid-column:1/-1">${TS.I.heart}<p style="font-family:var(--serif);font-size:26px;color:var(--text);margin:0 0 6px">${state.wish ? "Your wishlist is empty" : "Nothing matches just yet"}</p><p>${state.wish ? "Tap the heart on any piece to save it here." : "Try a different filter or price."}</p><a class="btn" href="shop.html" style="margin-top:12px">Browse all</a></div>`;
+    requestAnimationFrame(() => requestAnimationFrame(() => g.classList.add("in")));
+  }
+
+  function setUrl() {
+    const u = new URLSearchParams();
+    if (state.cat !== "all") u.set("cat", state.cat);
+    if (state.tag !== "all") u.set("tag", state.tag);
+    if (state.q) u.set("q", state.q);
+    if (state.wish) u.set("wishlist", "1");
+    history.replaceState(null, "", "shop.html" + (u.toString() ? "?" + u : ""));
+  }
+
+  document.addEventListener("click", e => {
+    const c = e.target.closest("[data-cat]"), t = e.target.closest("[data-tag]");
+    if (c) { state.cat = c.dataset.cat; state.wish = false; state.q = ""; setUrl(); render(); if (innerWidth > 960) scrollTo({ top: 0, behavior: "smooth" }); }
+    if (t) { state.tag = t.dataset.tag; state.wish = false; setUrl(); render(); }
+  });
+  $("#priceRange").addEventListener("input", e => { state.max = +e.target.value; render(); });
+  $("#sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
+  $("#resetBtn").addEventListener("click", () => { Object.assign(state, { cat: "all", tag: "all", q: "", wish: false, max: 13000 }); $("#priceRange").value = 13000; setUrl(); render(); });
+  document.addEventListener("wish:change", () => { if (state.wish) render(); });
+  render();
+};
+</script>
+</body>
+</html>

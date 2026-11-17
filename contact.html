@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Contact — True Shine Silver</title>
+  <meta name="description" content="Contact True Shine Silver — order on WhatsApp, FAQs, shipping, exchange and ring size guide.">
+  <meta name="theme-color" content="#070708">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="contact">
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs hero-fade"><a href="index.html">Home</a><span>/</span><span>Contact</span></div>
+      <h1 class="hero-fade d1">Let's talk <em>silver</em></h1>
+      <p class="lead hero-fade d2">Questions about sizing, custom orders or gifting? We reply within a few hours.</p>
+    </div>
+  </section>
+
+  <div class="wrap contact-grid">
+    <div class="reveal" id="cards"></div>
+    <form class="reveal" id="contactForm" novalidate>
+      <div class="fields">
+        <div class="field"><input id="cname" placeholder=" " required><label for="cname">Your name</label><span class="err">Please enter your name</span></div>
+        <div class="field"><input id="cphone" type="tel" placeholder=" " required><label for="cphone">Phone / WhatsApp</label><span class="err">Please enter your number</span></div>
+        <div class="field full"><select id="ctopic"><option>Order enquiry</option><option>Ring size help</option><option>Custom / engraving</option><option>Exchange</option><option>Other</option></select><label for="ctopic">Topic</label></div>
+        <div class="field full"><textarea id="cmsg" placeholder=" " required></textarea><label for="cmsg">Your message</label><span class="err">Please write a message</span></div>
+      </div>
+      <button class="btn" type="submit" style="margin-top:18px">Send on WhatsApp</button>
+    </form>
+  </div>
+
+  <section class="section" style="padding-top:0" id="faq">
+    <div class="wrap faq">
+      <div class="section-head reveal center" style="justify-content:center"><div><span class="eyebrow">Good to know</span><h2 class="h-section">Frequently asked</h2></div></div>
+      <div class="accordion reveal" id="faqList"></div>
+    </div>
+  </section>
+</main>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+window.TS_PAGE = () => {
+  const { I } = TS;
+  const $ = s => document.querySelector(s);
+  $("#cards").innerHTML = [
+    [I.wa, "WhatsApp", `<a href="https://wa.me/${STORE.whatsapp}" target="_blank" rel="noopener">${STORE.phone}</a>`],
+    [I.insta, "Instagram", `<a href="${STORE.instagram}" target="_blank" rel="noopener">@trueshinesilver.official</a>`],
+    [I.mail, "Email", `<a href="mailto:${STORE.email}">${STORE.email}</a>`],
+    [I.clock, "Hours", `<span>Monday – Saturday, 11am – 9pm</span>`],
+    [I.truck, "Delivery", `<span>Nationwide across Pakistan, 2–4 working days</span>`],
+  ].map(([i, b, s]) => `<div class="contact-card">${i}<div><b>${b}</b>${s}</div></div>`).join("");
+
+  const faqs = [
+    ["Is your jewellery real silver?", "Yes. Every piece is solid 925 sterling silver (92.5% pure silver), stamped and rhodium-plated for extra shine and tarnish resistance."],
+    ["How long does delivery take?", `Orders are dispatched within 48 hours and delivered in 2–4 working days across Pakistan. Delivery is free over ${TS.money(STORE.freeShippingOver)}; otherwise a flat ${TS.money(STORE.shippingFee)}.`],
+    ["Do you offer Cash on Delivery?", "Yes — pay in cash when your parcel arrives. We also accept bank transfer, Easypaisa and JazzCash."],
+    ["How do I find my ring size?", "Wrap a thin strip of paper around your finger, mark where it overlaps and measure in mm. 49mm ≈ size 5, 52mm ≈ 6, 54mm ≈ 7, 57mm ≈ 8, 60mm ≈ 9, 62mm ≈ 10, 65mm ≈ 11, 67mm ≈ 12. Or message us on WhatsApp and we'll help."],
+    ["What is your exchange policy?", "You can exchange any unworn item in its original packaging within 7 days of delivery. Just message us with your order number."],
+    ["Will my silver tarnish?", "Sterling silver can oxidise naturally over time, but our rhodium finish slows this greatly. A quick wipe with the included polishing cloth restores the shine."],
+  ];
+  $("#faqList").innerHTML = faqs.map(([q, a], i) => `<div class="acc-item ${i ? "" : "open"}"><button>${q}<i></i></button><div class="acc-panel"><div><div>${a}</div></div></div></div>`).join("");
+  document.querySelectorAll(".acc-item > button").forEach(b => b.onclick = () => b.parentElement.classList.toggle("open"));
+
+  const f = $("#contactForm");
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    let ok = true;
+    f.querySelectorAll("[required]").forEach(el => { const v = el.value.trim().length > 0; el.closest(".field").classList.toggle("invalid", !v); ok = ok && v; });
+    if (!ok) return;
+    const text = `Hi True Shine Silver!\nName: ${$("#cname").value}\nPhone: ${$("#cphone").value}\nTopic: ${$("#ctopic").value}\n\n${$("#cmsg").value}`;
+    window.open(`https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+  });
+};
+</script>
+</body>
+</html>

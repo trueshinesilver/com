@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Your Bag — True Shine Silver</title>
+  <meta name="theme-color" content="#070708">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="cart">
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs hero-fade"><a href="index.html">Home</a><span>/</span><span>Bag</span></div>
+      <h1 class="hero-fade d1">Your Bag</h1>
+      <div class="steps hero-fade d2"><b>01 Bag</b><i></i><span>02 Details</span><i></i><span>03 Confirmation</span></div>
+    </div>
+  </section>
+  <div class="wrap" id="cartRoot"></div>
+
+  <section class="section" style="padding-top:0" id="upsell">
+    <div class="wrap">
+      <div class="section-head reveal"><div><span class="eyebrow">Add a little extra shine</span><h2 class="h-section">Pairs <em>beautifully</em> with</h2></div></div>
+      <div class="product-grid stagger" id="upsellGrid"></div>
+    </div>
+  </section>
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+window.TS_PAGE = () => {
+  const { Cart, money, totals, promo, store, I, esc, card } = TS;
+  const root = document.getElementById("cartRoot");
+
+  function render() {
+    const lines = Cart.lines(), t = totals();
+    if (!lines.length) {
+      root.innerHTML = `<div class="empty" style="padding:100px 0">${I.bag}<p style="font-family:var(--serif);font-size:34px;color:var(--text);margin:0 0 8px">Your bag is empty</p><p>Looks like you haven't found your shine yet.</p><a href="shop.html" class="btn" style="margin-top:16px">Start shopping</a></div>`;
+      return;
+    }
+    const left = Math.max(0, STORE.freeShippingOver - (t.sub - t.discount));
+    root.innerHTML = `<div class="cart-layout">
+      <div>
+        <div class="ship-bar">${left ? `Add <b style="color:var(--text)">${money(left)}</b> more for <b style="color:var(--text)">free delivery</b>` : `✦ Congratulations — your order ships <b style="color:var(--text)">free</b>`}<div class="track"><div class="fill" style="width:${Math.min(100, (t.sub - t.discount) / STORE.freeShippingOver * 100)}%"></div></div></div>
+        <div class="cart-head"><span>Product</span><span>Quantity</span><span style="text-align:right">Total</span><span></span></div>
+        ${lines.map((l, i) => `<div class="cart-row" style="animation-delay:${i * .06}s" data-row="${l.key}">
+          <div class="cart-prod"><a href="product.html?id=${l.id}"><img src="${l.p.img.replace("w=900", "w=300")}" alt="${esc(l.p.name)}"></a>
+            <div><h4><a href="product.html?id=${l.id}">${esc(l.p.name)}</a></h4><div class="meta">${l.size ? "Size: " + esc(l.size) + "<br>" : ""}${money(l.p.price)} each</div></div></div>
+          <div class="qty small"><button data-q="-1" data-k="${l.key}" aria-label="Decrease">−</button><input value="${l.qty}" readonly aria-label="Quantity"><button data-q="1" data-k="${l.key}" aria-label="Increase">+</button></div>
+          <div class="line-total price">${money(l.p.price * l.qty)}</div>
+          <button class="remove-btn" data-remove="${l.key}" aria-label="Remove ${esc(l.p.name)}">${I.trash}</button>
+        </div>`).join("")}
+        <div class="row-between" style="margin-top:26px;flex-wrap:wrap"><a href="shop.html" class="link-arrow">← Continue shopping</a><button class="link-arrow" id="clearCart" style="color:var(--muted)">Clear bag</button></div>
+      </div>
+      <aside class="summary">
+        <h3>Order summary</h3>
+        <div class="sum-line"><span>Subtotal (${Cart.count()} items)</span><span>${money(t.sub)}</span></div>
+        ${t.discount ? `<div class="sum-line" style="color:var(--success)"><span>Discount (${promo.code})</span><span>− ${money(t.discount)}</span></div>` : ""}
+        <div class="sum-line"><span>Delivery</span><span>${t.shipping ? money(t.shipping) : "Free"}</span></div>
+        <form class="promo" id="promoForm"><input id="promoInput" placeholder="Promo code" value="${esc(promo.code)}" aria-label="Promo code"><button class="btn btn-ghost btn-sm" type="submit">Apply</button></form>
+        <div class="sum-line total"><span>Total</span><b>${money(t.total)}</b></div>
+        <a href="checkout.html" class="btn btn-block" style="margin-top:20px">Proceed to checkout</a>
+        <p class="note">${I.lock.replace("<svg", '<svg width="12" height="12" style="display:inline;vertical-align:-1px"')} Secure checkout · Cash on Delivery available</p>
+      </aside>
+    </div>`;
+  }
+
+  root.addEventListener("click", e => {
+    const r = e.target.closest("[data-remove]");
+    if (r) { const row = root.querySelector(`[data-row="${CSS.escape(r.dataset.remove)}"]`); row.classList.add("removing"); setTimeout(() => Cart.remove(r.dataset.remove), 350); }
+    if (e.target.closest("#clearCart")) Cart.clear();
+  });
+  root.addEventListener("submit", e => {
+    if (e.target.id !== "promoForm") return; e.preventDefault();
+    const code = document.getElementById("promoInput").value.trim().toUpperCase();
+    if (!code) { promo.code = ""; store.set("ts_promo", ""); render(); return; }
+    if (promo.rates[code]) { promo.code = code; store.set("ts_promo", code); TS.toast(`<div>✦ Code <b>${code}</b> applied — ${promo.rates[code] * 100}% off</div>`); }
+    else TS.toast(`<div>That code isn't valid. Try <b>SHINE10</b></div>`);
+    render();
+  });
+  document.addEventListener("cart:change", render);
+  render();
+
+  const inCart = new Set(Cart.items.map(i => i.id));
+  document.getElementById("upsellGrid").innerHTML = PRODUCTS.filter(p => !inCart.has(p.id) && p.price < 5000).slice(0, 4).map(card).join("");
+};
+</script>
+</body>
+</html>

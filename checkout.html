@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Checkout — True Shine Silver</title>
+  <meta name="theme-color" content="#070708">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="checkout">
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs hero-fade"><a href="index.html">Home</a><span>/</span><a href="cart.html">Bag</a><span>/</span><span>Checkout</span></div>
+      <h1 class="hero-fade d1">Checkout</h1>
+      <div class="steps hero-fade d2"><span>01 Bag</span><i></i><b>02 Details</b><i></i><span>03 Confirmation</span></div>
+    </div>
+  </section>
+
+  <div class="wrap" id="coRoot">
+    <div class="checkout-layout">
+      <form id="coForm" novalidate>
+        <div class="form-block reveal">
+          <h3><span class="n">1</span>Contact</h3>
+          <div class="fields">
+            <div class="field"><input id="fname" name="fname" placeholder=" " required autocomplete="given-name"><label for="fname">First name</label><span class="err">Please enter your first name</span></div>
+            <div class="field"><input id="lname" name="lname" placeholder=" " required autocomplete="family-name"><label for="lname">Last name</label><span class="err">Please enter your last name</span></div>
+            <div class="field"><input id="phone" name="phone" type="tel" placeholder=" " required autocomplete="tel"><label for="phone">Mobile number (03XX XXXXXXX)</label><span class="err">Enter a valid Pakistani mobile number</span></div>
+            <div class="field"><input id="email" name="email" type="email" placeholder=" " autocomplete="email"><label for="email">Email (optional)</label><span class="err">Enter a valid email</span></div>
+          </div>
+        </div>
+
+        <div class="form-block reveal">
+          <h3><span class="n">2</span>Delivery address</h3>
+          <div class="fields">
+            <div class="field full"><input id="address" name="address" placeholder=" " required autocomplete="street-address"><label for="address">House #, street, area</label><span class="err">Please enter your address</span></div>
+            <div class="field"><select id="city" name="city" required>
+              <option value="">Select city</option>
+              <option>Karachi</option><option>Lahore</option><option>Islamabad</option><option>Rawalpindi</option><option>Faisalabad</option><option>Multan</option><option>Peshawar</option><option>Quetta</option><option>Hyderabad</option><option>Sialkot</option><option>Gujranwala</option><option>Other</option>
+            </select><label for="city">City</label><span class="err">Please choose your city</span></div>
+            <div class="field"><input id="postal" name="postal" placeholder=" " inputmode="numeric" autocomplete="postal-code"><label for="postal">Postal code (optional)</label></div>
+            <div class="field full"><textarea id="notes" name="notes" placeholder=" "></textarea><label for="notes">Order notes — gift message, engraving, landmark (optional)</label></div>
+          </div>
+        </div>
+
+        <div class="form-block reveal">
+          <h3><span class="n">3</span>Payment</h3>
+          <div class="pay-opts" id="payOpts">
+            <label class="pay-opt active"><input type="radio" name="pay" value="Cash on Delivery" checked><div><b>Cash on Delivery</b><span>Pay in cash when your order arrives.</span></div></label>
+            <label class="pay-opt"><input type="radio" name="pay" value="Bank Transfer"><div><b>Bank Transfer</b><span>Transfer to our account; we confirm on WhatsApp.</span>
+              <div class="extra">Bank: <b>Your Bank Name</b><br>Account title: <b>True Shine Silver</b><br>IBAN: <b>PK00 XXXX 0000 0000 0000 0000</b><br><span>Please send the receipt on WhatsApp with your order number.</span></div></div></label>
+            <label class="pay-opt"><input type="radio" name="pay" value="Easypaisa / JazzCash"><div><b>Easypaisa / JazzCash</b><span>Mobile wallet transfer.</span>
+              <div class="extra">Wallet number: <b id="walletNo"></b> (True Shine Silver)<br><span>Send a screenshot of the payment on WhatsApp.</span></div></div></label>
+          </div>
+          <label style="display:flex;gap:10px;align-items:center;margin-top:20px;font-size:14px;color:var(--muted);cursor:pointer"><input type="checkbox" id="giftWrap" style="accent-color:#d9dade;width:16px;height:16px"> Add premium gift wrapping (+ Rs. 300)</label>
+        </div>
+
+        <button class="btn btn-block" type="submit" id="placeBtn" style="padding:20px">Place order</button>
+        <p class="secure"><span id="lockIco" style="display:inline-flex"></span> Your details are only used to deliver your order.</p>
+      </form>
+
+      <aside class="summary reveal" id="coSummary"></aside>
+    </div>
+  </div>
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+window.TS_PAGE = () => {
+  const { Cart, money, totals, promo, I, esc, store } = TS;
+  const $ = s => document.querySelector(s);
+  $("#walletNo").textContent = STORE.phone;
+  $("#lockIco").innerHTML = I.lock;
+  if (!Cart.lines().length) {
+    $("#coRoot").innerHTML = `<div class="empty" style="padding:100px 0">${I.bag}<p style="font-family:var(--serif);font-size:34px;color:var(--text);margin:0 0 8px">Your bag is empty</p><p>Add something special before checking out.</p><a href="shop.html" class="btn" style="margin-top:16px">Shop now</a></div>`;
+    return;
+  }
+  const GIFT = 300;
+  const calc = () => { const t = totals(); const g = $("#giftWrap").checked ? GIFT : 0; return { ...t, gift: g, total: t.total + g }; };
+
+  function renderSummary() {
+    const t = calc();
+    $("#coSummary").innerHTML = `<h3>Your order</h3>
+      <div class="co-items">${Cart.lines().map(l => `<div class="co-item"><div class="ph"><img src="${l.p.img.replace("w=900", "w=200")}" alt=""><span class="q">${l.qty}</span></div><div><h5>${esc(l.p.name)}</h5><span>${l.size ? "Size " + esc(l.size) : "925 Silver"}</span></div><span class="price">${money(l.p.price * l.qty)}</span></div>`).join("")}</div>
+      <div class="sum-line"><span>Subtotal</span><span>${money(t.sub)}</span></div>
+      ${t.discount ? `<div class="sum-line" style="color:var(--success)"><span>Discount (${promo.code})</span><span>− ${money(t.discount)}</span></div>` : ""}
+      <div class="sum-line"><span>Delivery</span><span>${t.shipping ? money(t.shipping) : "Free"}</span></div>
+      ${t.gift ? `<div class="sum-line"><span>Gift wrapping</span><span>${money(t.gift)}</span></div>` : ""}
+      <div class="sum-line total"><span>Total</span><b>${money(t.total)}</b></div>
+      <div class="pdp-perks" style="margin:22px 0 0"><div>${I.truck}2–4 day delivery</div><div>${I.return}7-day exchange</div><div>${I.gem}925 silver</div></div>`;
+  }
+  renderSummary();
+  $("#giftWrap").addEventListener("change", renderSummary);
+  document.addEventListener("cart:change", renderSummary);
+
+  $("#payOpts").addEventListener("change", () => document.querySelectorAll(".pay-opt").forEach(o => o.classList.toggle("active", o.querySelector("input").checked)));
+
+  const form = $("#coForm");
+  const validate = el => {
+    const f = el.closest(".field"); if (!f) return true;
+    let ok = el.checkValidity();
+    if (el.id === "phone") ok = /^(\+92|0)?3\d{2}[\s-]?\d{7}$/.test(el.value.trim());
+    f.classList.toggle("invalid", !ok); return ok;
+  };
+  form.querySelectorAll("input,select").forEach(el => el.addEventListener("blur", () => validate(el)));
+  form.querySelectorAll("input,select").forEach(el => el.addEventListener("input", () => el.closest(".field")?.classList.contains("invalid") && validate(el)));
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const els = [...form.querySelectorAll("input[required],select[required],#email")];
+    const bad = els.filter(el => !validate(el));
+    if (bad.length) { bad[0].focus(); bad[0].closest(".field").scrollIntoView({ behavior: "smooth", block: "center" }); TS.toast("<div>Please complete the highlighted fields</div>"); return; }
+    const btn = $("#placeBtn"); btn.disabled = true; btn.textContent = "Placing order…";
+    const d = Object.fromEntries(new FormData(form));
+    const t = calc();
+    const order = {
+      no: "TS-" + Date.now().toString().slice(-6),
+      date: new Date().toISOString(),
+      customer: { name: `${d.fname} ${d.lname}`.trim(), phone: d.phone, email: d.email, address: d.address, city: d.city, postal: d.postal, notes: d.notes },
+      payment: d.pay,
+      items: Cart.lines().map(l => ({ name: l.p.name, size: l.size, qty: l.qty, price: l.p.price, img: l.p.img })),
+      totals: t, promo: promo.code,
+    };
+    store.set("ts_last_order", order);
+    const orders = store.get("ts_orders", []); orders.unshift(order); store.set("ts_orders", orders.slice(0, 20));
+    setTimeout(() => { Cart.clear(); store.set("ts_promo", ""); location.href = "order-success.html"; }, 900);
+  });
+};
+</script>
+</body>
+</html>
