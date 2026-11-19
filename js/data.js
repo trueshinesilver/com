@@ -11,7 +11,7 @@ const STORE = {
   currency: "Rs.",
   freeShippingOver: 5000,
   shippingFee: 250,
-  whatsapp: "923000000000", // <- replace with your WhatsApp number (country code, no +)
+  whatsapp: "923313655975", // <- replace with your WhatsApp number (country code, no +)
   instagram: "https://www.instagram.com/trueshinesilver.official/",
   email: "hello@trueshinesilver.com",
   phone: "+92 300 0000000",
